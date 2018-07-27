@@ -23,8 +23,8 @@ import (
 	"github.com/hashicorp/hcl2/hcl/hclsyntax"
 	"github.com/hashicorp/terraform/addrs"
 	"github.com/hashicorp/terraform/config"
-	"github.com/hashicorp/terraform/configs/configschema"
 	"github.com/hashicorp/terraform/configs"
+	"github.com/hashicorp/terraform/configs/configschema"
 	"github.com/hashicorp/terraform/tfdiags"
 	tfversion "github.com/hashicorp/terraform/version"
 	"github.com/mitchellh/copystructure"
@@ -2174,29 +2174,6 @@ func (s moduleStateSort) Less(i, j int) bool {
 
 func (s moduleStateSort) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
-}
-
-// CheckStateVersion returns error diagnostics if the state is not compatible
-// with the current version of Terraform Core.
-func CheckStateVersion(state *State, allowFuture bool) tfdiags.Diagnostics {
-	var diags tfdiags.Diagnostics
-
-	if state == nil {
-		return diags
-	}
-
-	if state.FromFutureTerraform() && !allowFuture {
-		diags = diags.Append(tfdiags.Sourceless(
-			tfdiags.Error,
-			"Incompatible Terraform state format",
-			fmt.Sprintf(
-				"For safety reasons, Terraform will not run operations against a state that was written by a future Terraform version. Your current version is %s, but the state requires at least %s. To proceed, upgrade Terraform to a suitable version.",
-				tfversion.String(), state.TFVersion,
-			),
-		))
-	}
-
-	return diags
 }
 
 const stateValidateErrMultiModule = `
